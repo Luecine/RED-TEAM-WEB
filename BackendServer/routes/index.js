@@ -14,6 +14,5 @@ router.use("/health", healthRouter);
 router.use("/beneficiary", beneficiaryRouter);
 router.use("/user", userRouter);
 router.use("/main", mainRouter); //메인페이지 라우팅추가
-router.use("/notice", noticeRouter)
 
 module.exports = router;

@@ -1,0 +1,14 @@
+diff a/package.json b/package.json	(rejected hunks)
+@@ -13,6 +13,11 @@
+     "express": "~4.16.1",
+     "http-errors": "~1.6.3",
+     "morgan": "~1.9.1",
+-    "nodemon": "^2.0.20"
++    "mysql2": "^2.3.3",
++    "nodemon": "^2.0.20",
++    "sequelize": "^6.28.0"
++  },
++  "devDependencies": {
++    "sequelize-cli": "^6.5.2"
+   }
+ }
