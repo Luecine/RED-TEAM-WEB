@@ -3,7 +3,11 @@ var db = require('../../middlewares/db');
 var express = require('express');
 var router = express.Router();
 
-router.post('/', function(req, res, next) {
+router.get('/', function(req, res, next) {
+  res.render('writeboard');
+});
+
+router.post('/write', function(req, res, next) {
   const {topic, contents} = req.body;
 
   db.query(`INSERT INTO boards (id, userId, title, content)`,function(error,user){
