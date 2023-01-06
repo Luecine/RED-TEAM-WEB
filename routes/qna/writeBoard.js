@@ -1,30 +1,40 @@
-// var upload = require('../../middlewares/fileio');
+// const { Boards } = require('../../models');
 var db = require('../../middlewares/db');
 var seoultime = require('../../middlewares/seoultime');
 var express = require('express');
 var router = express.Router();
-//업로드 경로 설정
+var tokenauth = require('./tokenauth');
+var {encryptResponse, decryptRequest, decryptEnc} = require("../../middlewares/crypt");
+const profile = require('../../middlewares/profile');
+const checkCookie = require("../../middlewares/checkCookie")
 
-const multer = require('multer')
-const upload = multer({ dest: 'public/images' })
-
-router.get('/', function(req, res, next) {
-  res.render('qna/writeBoard');
+router.get('/', function (req, res, next) {
+    var cookie = decryptEnc(req.cookies.Token);
+    profile(cookie).then((data) => {
+        var cookieData = data.data;
+        tokenauth.authresult(req, function (aResult) {
+            if (aResult == true) {
+                res.render('temp/qna/writeBoard', {u_data: cookieData.username});
+            } else {
+                res.render('temp/qna/alert');
+            }
+        });
+    });
 });
 
-router.post('/write', upload.single('imgimg'),function(req, res, next) {
-  console.log(req.file);
-  const {title, contents} = req.body;
-
-  userId = "test";//will be extracted from token
-
-  db.query(`INSERT INTO boards VALUES (NULL, '${userId}','${title}','${contents}','${seoultime}','${seoultime}')`, function(error,results){
-    if(error){
-      throw error;
-    }
-  res.redirect('../viewBoard');
-  });
-
+router.post('/write', function (req, res, next) {
+    var cookie = decryptEnc(req.cookies.Token);
+    const {title, contents} = req.body;
+    profile(cookie).then((data) => {
+        var userId = data.data.username;
+        db.query(`INSERT INTO qna
+                  VALUES (NULL, '${userId}', '${title}', '${contents}', '${seoultime}', '${seoultime}', NULL)`, function (error, results) {
+            if (error) {
+                throw error;
+            }
+            res.redirect('../viewBoard');
+        });
+    });
 });
 
 module.exports = router;

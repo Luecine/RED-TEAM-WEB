@@ -2,31 +2,50 @@ var db = require('../../middlewares/db');
 var seoultime = require('../../middlewares/seoultime');
 var express = require('express');
 var router = express.Router();
-var tempid
+var tokenauth = require('./tokenauth');
+var {encryptResponse, decryptRequest, decryptEnc} = require("../../middlewares/crypt");
+const profile = require('../../middlewares/profile');
+const checkCookie = require("../../middlewares/checkCookie")
 
-router.get('/', function(req, res, next) {
-    tempid = req.query.id;
-    db.query(`SELECT * FROM boards where id=${req.query.id}`, function(error,results){
-        if(error){
-          throw error;
-        }
-        res.render('qna/editBoard',{results:results});
-    });
-
+router.get('/', function (req, res, next) {
+    var cookie = decryptEnc(req.cookies.Token);
+    profile(cookie).then((data) => {
+        var cookieData = data.data;
+        tokenauth.authresult(req, function (aResult) {
+            if (aResult == true) {
+                db.query(`SELECT *
+                          FROM qna
+                          where id = ${req.query.id}`, function (error, results) {
+                    if (error) {
+                        throw error;
+                    }
+                    res.render('temp/qna/editBoard', {
+                        u_data: cookieData.username,
+                        results: results,
+                        tempid: req.query.id
+                    });
+                });
+            } else {
+                res.render('temp/qna/alert');
+            }
+        });
+    })
 });
 
-router.post('/edit', function(req, res, next) {
-  console.log(req.body)
-  const {title, contents} = req.body;
- 
-  userId = "test";//will be extracted from token
+router.post('/edit', function (req, res, next) {
+    const {title, contents, pid} = req.body;
+    //will be extracted from token
 
-  db.query(`UPDATE boards SET title = '${title}', content = '${contents}', updatedAt = '${seoultime}' WHERE id = ${tempid}`, function(error,results){
-    if(error){
-      throw error;
-    }
-  res.redirect('../viewBoard');
-  });
+    db.query(`UPDATE qna
+              SET title     = '${title}',
+                  content   = '${contents}',
+                  updatedAt = '${seoultime}'
+              WHERE id = ${pid}`, function (error, results) {
+        if (error) {
+            throw error;
+        }
+        res.redirect('../viewBoard');
+    });
 
 });
 
