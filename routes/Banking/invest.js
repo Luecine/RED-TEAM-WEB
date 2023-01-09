@@ -6,7 +6,6 @@ const profile = require('../../middlewares/profile');
 const checkCookie = require("../../middlewares/checkCookie")
 var db = require('../../middlewares/db');
 var tokenauth = require('../qna/tokenauth');
-const request = require('request');
 
 var vari = "";
 async function api(code){
