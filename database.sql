@@ -16,7 +16,7 @@ create table transactions
 (
     id           integer PRIMARY KEY auto_increment,
     from_account int(11) NOT NULL,
-    to_account   int(11) NOT NULL,
+    to_account   VARCHAR(50) NOT NULL,
     amount       int     NOT NULL
 ) engine = innodb;
 
@@ -50,6 +50,22 @@ create table qna
     updatedAt DATETIME,
     comment   VARCHAR(1000),
     PRIMARY KEY (id)
+) engine = innodb;
+
+create table invest
+(
+    id       int not null auto_increment,
+    userId   varchar(30),
+    investId varchar(30),
+    curPrice int(10),
+    buyCount BIGINT,
+    PRIMARY KEY (id)
+) engine = innodb;
+
+create table margin
+(
+    userId   varchar(30),
+    margin   BIGINT default 0
 ) engine = innodb;
 
 INSERT INTO `users`
